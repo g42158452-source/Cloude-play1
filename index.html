@@ -149,6 +149,37 @@ footer {
   color: #8491b2;
   border-top: 1px solid #252d50;
   margin-top: 40px;
+}.host-panel {
+  margin: 25px 7%;
+  padding: 22px;
+  background: #141b32;
+  border: 1px solid #00d9ff;
+  border-radius: 15px;
+}
+
+.host-panel h2 {
+  margin-bottom: 12px;
+  color: #00d9ff;
+}
+
+.host-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 15px 0;
+}
+
+#screenPreview {
+  width: 100%;
+  max-height: 350px;
+  background: #050711;
+  border-radius: 12px;
+  margin-top: 15px;
+}
+
+#hostStatus {
+  color: #b6c3e5;
+  margin-top: 12px;
 }
 </style>
 </head>
@@ -171,7 +202,36 @@ footer {
     placeholder="Search your favourite games..."
   >
 </section>
+<section class="host-panel">
 
+  <h2>📱 Phone Host Mode</h2>
+
+  <p>Use your phone as a cloud gaming host.</p>
+
+  <div class="host-buttons">
+
+    <button onclick="startHost()">
+      Start Host
+    </button>
+
+    <button onclick="stopHost()">
+      Stop Streaming
+    </button>
+
+  </div>
+
+  <p id="hostStatus">
+    ● Host is disconnected
+  </p>
+
+  <video
+    id="screenPreview"
+    autoplay
+    muted
+    playsinline
+  ></video>
+
+</section>
 <main>
   <h2 class="section-title">🎮 Game Library</h2>
 
@@ -287,6 +347,66 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
   document.head.appendChild(style);
 });
-  </script>
+  </script>let hostStream = null;
+
+async function startHost() {
+
+  const status = document.getElementById("hostStatus");
+  const video = document.getElementById("screenPreview");
+
+  try {
+
+    if (!navigator.mediaDevices ||
+        !navigator.mediaDevices.getDisplayMedia) {
+
+      status.textContent =
+        "Screen sharing is not supported in this browser.";
+
+      return;
+    }
+
+    hostStream =
+      await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: false
+      });
+
+    video.srcObject = hostStream;
+
+    await video.play();
+
+    status.textContent =
+      "● Screen sharing is active";
+
+    hostStream.getVideoTracks()[0]
+      .addEventListener("ended", () => {
+        stopHost();
+      });
+
+  } catch (error) {
+
+    status.textContent =
+      "Connection cancelled or unavailable: " +
+      error.message;
+
+  }
+}
+
+function stopHost() {
+
+  if (hostStream) {
+
+    hostStream.getTracks().forEach(track => {
+      track.stop();
+    });
+
+    hostStream = null;
+  }
+
+  document.getElementById("screenPreview").srcObject = null;
+
+  document.getElementById("hostStatus").textContent =
+    "● Host is disconnected";
+}
 </body>
 </html>
