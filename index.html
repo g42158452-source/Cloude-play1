@@ -243,6 +243,50 @@ function playGame(name) {
     "<br>Cloud gaming server is not connected yet. Streaming will be added in a future update.";
 }
 </script>
+<script>
+document.addEventListener("keydown", function(e) {
+  const keys = [
+    "ArrowUp",
+    "ArrowDown",
+    "ArrowLeft",
+    "ArrowRight"
+  ];
 
+  if (!keys.includes(e.key)) return;
+
+  const items = [...document.querySelectorAll(
+    "button, a, input, [tabindex]"
+  )].filter(el =>
+    !el.disabled &&
+    el.offsetWidth > 0 &&
+    el.offsetHeight > 0
+  );
+
+  if (!items.length) return;
+
+  e.preventDefault();
+
+  let index = items.indexOf(document.activeElement);
+
+  if (index < 0) index = 0;
+  else if (e.key === "ArrowRight" || e.key === "ArrowDown")
+    index = (index + 1) % items.length;
+  else
+    index = (index - 1 + items.length) % items.length;
+
+  items[index].focus();
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const style = document.createElement("style");
+  style.textContent = `
+    button:focus, a:focus, input:focus {
+      outline: 3px solid #00eaff !important;
+      outline-offset: 5px;
+    }
+  `;
+  document.head.appendChild(style);
+});
+  </script>
 </body>
 </html>
