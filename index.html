@@ -1,0 +1,248 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudPlay - Cloud Gaming</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #080b18;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 7%;
+  background: #10152a;
+  border-bottom: 1px solid #252d50;
+}
+
+.logo {
+  font-size: 27px;
+  font-weight: bold;
+  color: #00d9ff;
+  text-shadow: 0 0 15px #00d9ff;
+}
+
+.status {
+  color: #00ff9d;
+  font-size: 13px;
+}
+
+.hero {
+  padding: 65px 7%;
+  text-align: center;
+  background: radial-gradient(ellipse, #18265b, #080b18 75%);
+}
+
+.hero h1 {
+  font-size: clamp(35px, 7vw, 60px);
+  margin-bottom: 15px;
+}
+
+.hero h1 span {
+  color: #00d9ff;
+}
+
+.hero p {
+  color: #b6c3e5;
+  margin-bottom: 25px;
+}
+
+.search {
+  width: 90%;
+  max-width: 450px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #00d9ff;
+  background: #10152a;
+  color: white;
+  outline: none;
+}
+
+main {
+  padding: 35px 7%;
+}
+
+.section-title {
+  font-size: 25px;
+  margin-bottom: 22px;
+}
+
+.games {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 22px;
+}
+
+.game {
+  background: #141b32;
+  border: 1px solid #29365c;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: 0.3s;
+}
+
+.game:hover {
+  transform: translateY(-6px);
+  border-color: #00d9ff;
+  box-shadow: 0 0 20px #00d9ff30;
+}
+
+.game-art {
+  height: 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 55px;
+  background: linear-gradient(135deg, #182c59, #562c85);
+}
+
+.game-info {
+  padding: 18px;
+}
+
+.game-info p {
+  color: #aab5d1;
+  font-size: 13px;
+  margin: 10px 0 16px;
+}
+
+button {
+  background: linear-gradient(90deg, #00cfff, #7955ff);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 11px 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.85;
+}
+
+.notice {
+  margin-top: 25px;
+  padding: 18px;
+  background: #151d37;
+  border: 1px solid #36476f;
+  border-radius: 12px;
+  color: #b6c3e5;
+  line-height: 1.6;
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #8491b2;
+  border-top: 1px solid #252d50;
+  margin-top: 40px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">☁ CloudPlay</div>
+  <div class="status">● Platform Online</div>
+</header>
+
+<section class="hero">
+  <h1>PLAY ANYWHERE.<br>
+  <span>PLAY IN CLOUD.</span></h1>
+  <p>Your gaming world starts here.</p>
+  <input
+    class="search"
+    id="search"
+    type="search"
+    placeholder="Search your favourite games..."
+  >
+</section>
+
+<main>
+  <h2 class="section-title">🎮 Game Library</h2>
+
+  <div class="games" id="games">
+
+    <div class="game" data-name="bgmi">
+      <div class="game-art">🔫</div>
+      <div class="game-info">
+        <h3>BGMI</h3>
+        <p>Battle Royale · Android</p>
+        <button onclick="playGame('BGMI')">Play Now</button>
+      </div>
+    </div>
+
+    <div class="game" data-name="free fire max">
+      <div class="game-art">🔥</div>
+      <div class="game-info">
+        <h3>Free Fire MAX</h3>
+        <p>Battle Royale · Android</p>
+        <button onclick="playGame('Free Fire MAX')">Play Now</button>
+      </div>
+    </div>
+
+    <div class="game" data-name="minecraft">
+      <div class="game-art">⛏️</div>
+      <div class="game-info">
+        <h3>Minecraft</h3>
+        <p>Adventure · Android</p>
+        <button onclick="playGame('Minecraft')">Play Now</button>
+      </div>
+    </div>
+
+    <div class="game" data-name="asphalt 9">
+      <div class="game-art">🏎️</div>
+      <div class="game-info">
+        <h3>Asphalt 9</h3>
+        <p>Racing · Android</p>
+        <button onclick="playGame('Asphalt 9')">Play Now</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="notice" id="notice">
+    ☁ Welcome to CloudPlay!<br>
+    Game streaming server is not connected yet.
+  </div>
+</main>
+
+<footer>
+  © 2026 CloudPlay. Your Gaming Universe.
+</footer>
+
+<script>
+const search = document.getElementById("search");
+
+search.addEventListener("input", function() {
+  const query = search.value.toLowerCase();
+
+  document.querySelectorAll(".game").forEach(game => {
+    game.style.display =
+      game.dataset.name.includes(query) ? "block" : "none";
+  });
+});
+
+function playGame(name) {
+  document.getElementById("notice").innerHTML =
+    "🎮 " + name +
+    "<br>Cloud gaming server is not connected yet. Streaming will be added in a future update.";
+}
+</script>
+
+</body>
+</html>
