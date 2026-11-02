@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sachin's Cloud - Cloud Gaming</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#080b18;color:white;font-family:Arial,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 7%;background:#10152a;border-bottom:1px solid #252d50}
+.logo{font-size:25px;font-weight:bold;color:#00d9ff;text-shadow:0 0 15px #00d9ff}
+.status{color:#00ff9d;font-size:13px}
+.hero{padding:65px 7%;text-align:center;background:radial-gradient(ellipse,#18265b,#080b18 75%)}
+.hero h1{font-size:clamp(35px,7vw,60px);margin-bottom:15px}
+.hero h1 span{color:#00d9ff}
+.hero p{color:#b6c3e5;margin-bottom:25px}
+.search{width:90%;max-width:450px;padding:14px;border-radius:10px;border:1px solid #00d9ff;background:#10152a;color:white}
+main{padding:35px 7%}
+.section-title{font-size:25px;margin-bottom:22px}
+.games{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px}
+.game{background:#141b32;border:1px solid #29365c;border-radius:15px;overflow:hidden}
+.game-art{height:140px;display:flex;justify-content:center;align-items:center;font-size:55px;background:linear-gradient(135deg,#182c59,#562c85)}
+.game-info{padding:18px}
+.game-info p{color:#aab5d1;font-size:13px;margin:10px 0 16px}
+button{background:linear-gradient(90deg,#00cfff,#7955ff);color:white;border:0;border-radius:8px;padding:11px 20px;font-weight:bold;cursor:pointer}
+button:hover{opacity:.85}
+.host-panel{margin:25px 7%;padding:22px;background:#141b32;border:1px solid #00d9ff;border-radius:15px}
+.host-panel h2{color:#00d9ff;margin-bottom:12px}
+.host-buttons{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}
+#screenPreview{width:100%;max-height:350px;background:#050711;border-radius:12px;margin-top:15px}
+#hostStatus{color:#b6c3e5;margin-top:12px;line-height:1.5}
+.notice{margin-top:25px;padding:18px;background:#151d37;border:1px solid #36476f;border-radius:12px;color:#b6c3e5;line-height:1.6}
+footer{text-align:center;padding:25px;color:#8491b2;border-top:1px solid #252d50;margin-top:40px}
+button:focus,input:focus{outline:3px solid #00eaff;outline-offset:4px}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">☁ Sachin's Cloud</div>
+  <div class="status">● Platform Online</div>
+</header>
+
+<section class="hero">
+  <h1>PLAY ANYWHERE.<br><span>PLAY IN CLOUD.</span></h1>
+  <p>Your gaming world starts here.</p>
+  <input class="search" id="search" type="search" placeholder="Search your favourite games...">
+</section>
+
+<section class="host-panel">
+  <h2>📱 Phone Host Mode</h2>
+  <p>Test screen sharing from your phone.</p>
+
+  <div class="host-buttons">
+    <button id="startButton" onclick="startHost()">Start Host</button>
+    <button onclick="stopHost()">Stop Host</button>
+  </div>
+
+  <p id="hostStatus">● Host is disconnected</p>
+
+  <video id="screenPreview" autoplay muted playsinline></video>
+</section>
+
+<main>
+  <h2 class="section-title">🎮 Game Library</h2>
+
+  <div class="games" id="games">
+
+    <div class="game" data-name="bgmi">
+      <div class="game-art">🔫</div>
+      <div class="game-info">
+        <h3>BGMI</h3>
+        <p>Battle Royale · Android</p>
+        <button onclick="playGame('BGMI')">Play Now</button>
+      </div>
+    </div>
+
+    <div class="game" data-name="free fire max">
+      <div class="game-art">🔥</div>
+      <div class="game-info">
+        <h3>Free Fire MAX</h3>
+        <p>Battle Royale · Android</p>
+        <button onclick="playGame('Free Fire MAX')">Play Now</button>
+      </div>
+    </div>
+
+    <div class="game" data-name="minecraft">
+      <div class="game-art">⛏️</div>
+      <div class="game-info">
+        <h3>Minecraft</h3>
+        <p>Adventure · Android</p>
+        <button onclick="playGame('Minecraft')">Play Now</button>
+      </div>
+    </div>
+
+    <div class="game" data-name="asphalt 9">
+      <div class="game-art">🏎️</div>
+      <div class="game-info">
+        <h3>Asphalt 9</h3>
+        <p>Racing · Android</p>
+        <button onclick="playGame('Asphalt 9')">Play Now</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="notice" id="notice">
+    Welcome to Sachin's Cloud!<br>
+    Screen sharing test is available. Cloud gaming server is not connected.
+  </div>
+</main>
+
+<footer>© 2026 Sachin's Cloud. Your Gaming Universe.</footer>
+
+<script>
+let hostStream = null;
+
+const search = document.getElementById("search");
+
+search.addEventListener("input", function() {
+  const query = search.value.toLowerCase();
+
+  document.querySelectorAll(".game").forEach(game => {
+    game.style.display =
+      game.dataset.name.includes(query) ? "block" : "none";
+  });
+});
+
+function playGame(name) {
+  document.getElementById("notice").innerHTML =
+    name + "<br>Cloud gaming server is not connected yet.";
+}
+
+async function startHost() {
+  const status = document.getElementById("hostStatus");
+  const video = document.getElementById("screenPreview");
+
+  if (hostStream) {
+    status.textContent = "● Screen sharing is already active";
+    return;
+  }
+
+  try {
+    if (!navigator.mediaDevices ||
+        !navigator.mediaDevices.getDisplayMedia) {
+      status.textContent =
+        "Screen sharing is not supported in this browser. Try a supported browser.";
+      return;
+    }
+
+    status.textContent = "Waiting for screen-sharing permission...";
+
+    hostStream = await navigator.mediaDevices.getDisplayMedia({
+      video: true,
+      audio: false
+    });
+
+    video.srcObject = hostStream;
+    await video.play();
+
+    status.textContent = "● Screen sharing is active";
+
+    hostStream.getVideoTracks()[0].addEventListener("ended", stopHost);
+
+  } catch (error) {
+    hostStream = null;
+    status.textContent =
+      "Screen sharing unavailable: " + error.message;
+  }
+}
+
+function stopHost() {
+  if (hostStream) {
+    hostStream.getTracks().forEach(track => track.stop());
+    hostStream = null;
+  }
+
+  document.getElementById("screenPreview").srcObject = null;
+  document.getElementById("hostStatus").textContent =
+    "● Host is disconnected";
+}
+</script>
+
+</body>
+</html>
